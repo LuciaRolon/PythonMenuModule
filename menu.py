@@ -19,13 +19,15 @@ class MenuCallable:
     func_call: Callable
     request_input: dict
     print_result: bool
+    additional_params: dict
 
     def __init__(
         self,
         input_options: list[str],
         func_call: Callable = None,
         request_input: dict = None,
-        print_result: bool = False
+        print_result: bool = False,
+        additional_params: dict = None
     ):
         """
         Generates a function call if the given input matches input_options.
@@ -34,16 +36,18 @@ class MenuCallable:
         :param func_call: The function that will be called if the user inputs an option in input_options. This must be a reference to the function.
         :param request_input: A dictionary containing further input requests that will be sent as parameters to your function. The keys of this dictionary will be the function parameter name, and the values will be the message prompted to ask for the parameter value. Example: {'name': "Input your name"}
         :param print_result: If true, the result of the function call will be printed.
+        :param additional_params: Any other parameters to be sent to func_call that are not directly requested through request_input.
         """
         self.input_options = input_options
         self.func_call = func_call
         self.request_input = request_input
         self.print_result = print_result
+        self.additional_params = additional_params
 
     def __call__(self, *args, **kwargs):
         if not self.func_call:
             return
-        inputs = {}
+        inputs = self.additional_params if self.additional_params else {}
         if self.request_input:
             for key, value in self.request_input.items():
                 response = input(f"{value}\n")
